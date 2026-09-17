@@ -6,10 +6,13 @@ on:
       - main
 
 jobs:
+
   deploy:
+
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Checkout Repository
         uses: actions/checkout@v4
 
@@ -21,19 +24,19 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_ed25519
           chmod 600 ~/.ssh/id_ed25519
-          ssh-keyscan -H "${{ secrets.EC2_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
       - name: Copy Project to EC2
         run: |
           rsync -avz --delete \
-            -e "ssh -i ~/.ssh/id_ed25519" \
-            ./ \
-            ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ec2-user/app
+          -e "ssh -i ~/.ssh/id_ed25519" \
+          ./ \
+          ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }}:/home/ec2-user/app
 
       - name: Deploy Container
         run: |
           ssh -i ~/.ssh/id_ed25519 \
-            ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
+          ${{ secrets.EC2_USERNAME }}@${{ secrets.EC2_HOST }} << 'EOF'
 
             cd /home/ec2-user/app
 
